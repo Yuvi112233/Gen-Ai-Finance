@@ -289,39 +289,43 @@ const Form = () => {
   };
 
   const handleSendEmailSummary = async () => {
-      setShowEmailModal(true);
-      console.log("Sending email with data:", JSON.stringify(budgetData));
-
-      if (!budgetData || !budgetData.email) {
-          console.error("Missing email address or budget data");
-          setEmailSent(true);
-          return;
+    setShowEmailModal(true);
+    console.log("Sending email with data:", JSON.stringify(budgetData));
+  
+    if (!budgetData || !budgetData.email) {
+      console.error("Missing email address or budget data");
+      setEmailSent(true);
+      return;
+    }
+  
+    const backendUrl = process.env.NODE_ENV === 'production'
+      ? 'https://gen-ai-finance-back-end.onrender.com'
+      : 'http://localhost:8000';
+  
+    try {
+      const response = await fetch(`${backendUrl}/send_email_summary`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(budgetData), // Send full budget data
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
       }
-
-      try {
-          const response = await fetch('http://localhost:8000/send_email_summary', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(budgetData), // Send full budget data
-          });
-
-          if (!response.ok) {
-              throw new Error(`Server responded with status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log('Email Summary Response:', data);
-          if (!data.success) {
-              console.error('Email sending failed:', data.message);
-              throw new Error(data.message || 'Email sending failed');
-          }
-          setEmailSent(true);
-      } catch (error) {
-          console.error('Error sending email summary:', error);
-          setEmailSent(true); // Show modal even on error for user feedback
+  
+      const data = await response.json();
+      console.log('Email Summary Response:', data);
+      if (!data.success) {
+        console.error('Email sending failed:', data.message);
+        throw new Error(data.message || 'Email sending failed');
       }
+      setEmailSent(true);
+    } catch (error) {
+      console.error('Error sending email summary:', error);
+      setEmailSent(true); // Show modal even on error for user feedback
+    }
   };
 
   const renderEmailModal = () => {
