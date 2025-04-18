@@ -366,7 +366,7 @@ app = FastAPI()
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://gen-ai-finance-front-end.onrender.com/"],  # Match your frontend origin
+    allow_origins=["https://gen-ai-finance-front-end.onrender.com"],  # Match your frontend origin
     allow_credentials=True,
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
